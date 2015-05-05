@@ -70,19 +70,57 @@ public:
   };
 };
 
-void shuffle (Card Deck[52])
+int generateSuit()
 {
   srand(time(NULL));
-  
-  
-}
+  return (rand() % 4) + 1;
+};
+
+int generateNum()
+{
+  srand(time(NULL));
+  return (rand() % 13) + 1;
+};
+
+void shuffle (Card Deck[52])
+{
+  for(int i = 0; i < 52; i++)
+  {
+    int suit = 0, num = 0, count[4] = {0}, count2[13] = {0};
+    do {
+      suit = generateSuit();
+      if(count[suit - 1] < 13)
+      {
+        count[suit - 1]++;
+      };
+    } while (count[suit - 1] > 13);
+    
+    do {
+      num = generateNum();
+      if(count2[num - 1] < 4)
+      {
+        count2[num - 1]++;
+      };
+    } while (count2[num - 1] > 4);
+    
+    Deck[i].init(suit, num);
+  };
+};
+
+void printDeck(Card Deck[52])
+{
+  for(int i = 0; i < 52; i++)
+  {
+    Deck[i].readCard();
+    cout << "\n";
+  };
+};
 
 int main ()
 {
-  Card Ace1;
-  Ace1.init(1, 1);
-  
-  Ace1.readCard();
+  Card Deck[52];
+  shuffle(Deck);
+  printDeck(Deck);
   
   return 0;
 };
