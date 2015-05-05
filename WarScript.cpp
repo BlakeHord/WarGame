@@ -1,9 +1,10 @@
 #include <iostream>
 #include <string>
 
-Class Card
+using namespace std;
+
+class Card
 {
-  using namespace std;
 private:
   string m_suit;
   int m_num;
