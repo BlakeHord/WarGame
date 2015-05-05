@@ -3,7 +3,6 @@
 #include <ctime>
 
 using namespace std;
-srand(time(NULL));
 
 class Card
 {
@@ -117,6 +116,7 @@ void printDeck(Card Deck[52])
 
 int main ()
 {
+  srand(time(NULL));
   Card Deck[52];
   shuffle(Deck);
   printDeck(Deck);
