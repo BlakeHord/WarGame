@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 Class Card
 {
@@ -10,7 +11,7 @@ private:
 public:
   Card(string suit, int num)
   {
-    strcpy(m_suit, suit);
+    m_suit = suit;
     m_num = num;
   };
   
