@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <ctime>
 
 using namespace std;
 
@@ -10,12 +11,6 @@ private:
   int m_num;
   
 public:
-  Card(string suit, int num)
-  {
-    m_suit = suit;
-    m_num = num;
-  };
-  
   void readCard()
   {
     switch (m_num)
@@ -50,11 +45,42 @@ public:
     
     cout << " of " << m_suit;
   };
+  
+  void init(int suit, int num)
+  {
+    switch (suit)
+    {
+      case 1:
+        m_suit = "Spades";
+        break;
+      case 2:
+        m_suit = "Clubs";
+        break;
+      case 3:
+        m_suit = "Diamonds";
+        break;
+      case 4:
+        m_suit = "Hearts";
+        break;
+      default:
+        cout << "Unknown suit value: RESTART";
+        break;
+    };
+    m_num = num;
+  };
 };
+
+void shuffle (Card Deck[52])
+{
+  srand(time(NULL));
+  
+  
+}
 
 int main ()
 {
-  Card Ace1("Spades", 1);
+  Card Ace1;
+  Ace1.init(1, 1);
   
   Ace1.readCard();
   
