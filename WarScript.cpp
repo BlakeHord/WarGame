@@ -3,6 +3,7 @@
 #include <ctime>
 
 using namespace std;
+srand(time(NULL));
 
 class Card
 {
@@ -72,13 +73,11 @@ public:
 
 int generateSuit()
 {
-  srand(time(NULL));
   return (rand() % 4) + 1;
 };
 
 int generateNum()
 {
-  srand(time(NULL));
   return (rand() % 13) + 1;
 };
 
