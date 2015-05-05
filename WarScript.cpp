@@ -7,6 +7,7 @@ using namespace std;
 class Card
 {
 private:
+  int m_suitnum
   string m_suit;
   int m_num;
   
@@ -48,7 +49,8 @@ public:
   
   void init(int suit, int num)
   {
-    switch (suit)
+    m_suitnum  = suit
+    switch (m_suitnum)
     {
       case 1:
         m_suit = "Spades";
@@ -102,6 +104,11 @@ void shuffle (Card Deck[52])
     } while (count2[num - 1] > 4);
     
     Deck[i].init(suit, num);
+    
+    if(checkDuplicate(Deck, i, num, suit) == 1)
+    {
+      i--;
+    };
   };
 };
 
@@ -112,6 +119,22 @@ void printDeck(Card Deck[52])
     Deck[i].readCard();
     cout << "\n";
   };
+};
+
+int checkDuplicate (Card Deck[52], int limit, int num, int suit)
+{
+  for (int i = 0; i < limit; i++)
+  {
+    if (Deck[i].m_num == num && Deck[i].m_suitnum == suit)
+    {
+      return 1;
+    } else
+    {
+      continue;
+    };
+  };
+  
+  return 0;
 };
 
 int main ()
