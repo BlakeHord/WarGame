@@ -3,12 +3,18 @@
 #include <ctime>
 #include <cstdlib>
 
+int generateSuit();
+int generateNum();
+void shuffle (Card Deck[52]);
+void printDeck(Card Deck[52]);
+int checkDuplicate (Card Deck[52], int limit, int num, int suit);
+
 using namespace std;
 
 class Card
 {
 private:
-  int m_suitnum
+  int m_suitnum;
   string m_suit;
   int m_num;
   
@@ -50,7 +56,7 @@ public:
   
   void init(int suit, int num)
   {
-    m_suitnum  = suit
+    m_suitnum  = suit;
     switch (m_suitnum)
     {
       case 1:
