@@ -46,10 +46,16 @@ public:
         cout << "Corrupted Card! RESTART";
         break;
     };
-  }
-}
+    
+    cout << " of " << m_suit;
+  };
+};
 
 int main ()
 {
-
-}
+  Card Ace1("Spades", 1);
+  
+  Ace1.readCard();
+  
+  return 0;
+};
