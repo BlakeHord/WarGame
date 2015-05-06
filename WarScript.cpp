@@ -3,6 +3,8 @@
 #include <ctime>
 #include <cstdlib>
 
+class Card;
+
 int generateSuit();
 int generateNum();
 void shuffle (Card Deck[52]);
@@ -77,6 +79,16 @@ public:
     };
     m_num = num;
   };
+  
+  int returnNum()
+  {
+    return m_num;
+  };
+  
+  int returnSuitnum()
+  {
+    return m_suitnum;
+  };
 };
 
 int generateSuit()
@@ -132,7 +144,7 @@ int checkDuplicate (Card Deck[52], int limit, int num, int suit)
 {
   for (int i = 0; i < limit; i++)
   {
-    if (Deck[i].m_num == num && Deck[i].m_suitnum == suit)
+    if (Deck[i].returnNum() == num && Deck[i].returnSuitnum() == suit)
     {
       return 1;
     } else
@@ -146,10 +158,17 @@ int checkDuplicate (Card Deck[52], int limit, int num, int suit)
 
 int main ()
 {
+  cout << "Let's play war! You and the computer will draw a card from your hand, and whoever's card is " <<
+      "higher wins the other's card\nIf you both draw the same card, three cards will be drawn, and whoever's third card " <<
+      "is higher wins all the cards played\n\nPress enter to start";
+  
+  string buff;
+  gets(buff);
+  
   srand(time(NULL));
   Card Deck[52];
   shuffle(Deck);
-  printDeck(Deck);
+  
   
   return 0;
 };
