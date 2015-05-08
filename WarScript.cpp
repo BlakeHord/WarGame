@@ -200,8 +200,8 @@ int main ()
       "higher wins the other's card!\nIf you both draw the same card, three cards will be drawn, and whoever's third card " <<
       "is higher wins all the cards played\n\nPress enter to start";
   
-  string buff;
-  gets(buff);
+  char buff;
+  cin.get(buff);
   
   srand(time(NULL));
   
