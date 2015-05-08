@@ -2,6 +2,7 @@
 #include <string>
 #include <ctime>
 #include <cstdlib>
+#include <cstdio>
 
 class Card;
 
@@ -21,6 +22,13 @@ private:
   int m_num;
   
 public:
+  Card(Card *ptr = NULL)
+  {
+    m_ptr = ptr;
+  };
+  
+  Card *m_ptr;
+  
   void readCard()
   {
     switch (m_num)
@@ -89,6 +97,11 @@ public:
   {
     return m_suitnum;
   };
+  
+  Card* returnNext()
+  {
+    return m_ptr;
+  };
 };
 
 int generateSuit()
@@ -101,8 +114,11 @@ int generateNum()
   return (rand() % 13) + 1;
 };
 
-void shuffle (Card Deck[52])
+void shuffle (Card *head)
 {
+  Card *ptr = NULL;
+  ptr = head;
+  
   for(int i = 0; i < 52; i++)
   {
     int suit = 0, num = 0, count[4] = {0}, count2[13] = {0};
@@ -122,21 +138,26 @@ void shuffle (Card Deck[52])
       };
     } while (count2[num - 1] > 4);
     
-    Deck[i].init(suit, num);
+    *head.init(suit, num);
     
     if(checkDuplicate(Deck, i, num, suit) == 1)
     {
       i--;
+    } else
+    {
+      head = head->m_ptr;
     };
   };
 };
 
-void printDeck(Card Deck[52])
+void printDeck(Card *head)
 {
+  Card *ptr = head;
   for(int i = 0; i < 52; i++)
   {
-    Deck[i].readCard();
+    *ptr.readCard();
     cout << "\n";
+    ptr = ptr->m_ptr;
   };
 };
 
@@ -156,19 +177,37 @@ int checkDuplicate (Card Deck[52], int limit, int num, int suit)
   return 0;
 };
 
+Card *makeDeck(int length)
+{
+  Card *head = NULL, *current = NULL, *next = NULL;
+  
+  head = new Card;
+  head->m_ptr = new Card;
+  current = head->m_ptr;
+  
+  for(int i = 2; i < length; i++)
+  {
+    current->m_ptr = new Card;
+    current = current->m_ptr;
+  };
+  
+  return head;
+};
+
 int main ()
 {
   cout << "Let's play war! You and the computer will draw a card from your hand, and whoever's card is " <<
-      "higher wins the other's card\nIf you both draw the same card, three cards will be drawn, and whoever's third card " <<
+      "higher wins the other's card!\nIf you both draw the same card, three cards will be drawn, and whoever's third card " <<
       "is higher wins all the cards played\n\nPress enter to start";
   
   string buff;
   gets(buff);
   
   srand(time(NULL));
-  Card Deck[52];
-  shuffle(Deck);
   
+  *Card head = makeDeck(52);
+  shuffle(head);
+  printDeck(head);
   
   return 0;
 };
