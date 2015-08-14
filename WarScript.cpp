@@ -2,25 +2,37 @@
 #include <string>
 #include <ctime>
 #include <cstdlib>
+#include <cstdio>
 
 class Card;
+class Deck;
 
+int checkDuplicate (Card *head, int limit, int num, int suit); // Headers for functions 
 int generateSuit();
 int generateNum();
-void shuffle (Card Deck[52]);
-void printDeck(Card Deck[52]);
-int checkDuplicate (Card Deck[52], int limit, int num, int suit);
+Card* createDeck (Card *lolo, int current, int max);
+void playGame(Deck *one, Deck *two);
+void deal(Deck *first, Deck *second, Deck master);
+void printDeck(Deck master);
 
 using namespace std;
 
-class Card
+class Card // How # and suit for cards are stored
 {
 private:
-  int m_suitnum;
-  string m_suit;
-  int m_num;
+    int m_suitnum;
+    string m_suit;
+    int m_num;
   
 public:
+  
+  Card(Card *ptr = NULL)
+  {
+    next = ptr;
+  };
+  
+  Card *next;
+  
   void readCard()
   {
     switch (m_num)
@@ -56,9 +68,9 @@ public:
     cout << " of " << m_suit;
   };
   
-  void init(int suit, int num)
+  void init(int suit, int num) // Initialize the card
   {
-    m_suitnum  = suit;
+    m_suitnum = suit;
     switch (m_suitnum)
     {
       case 1:
@@ -80,7 +92,7 @@ public:
     m_num = num;
   };
   
-  int returnNum()
+  int returnNum() // Accessing private variables
   {
     return m_num;
   };
@@ -91,7 +103,112 @@ public:
   };
 };
 
-int generateSuit()
+class Deck // Class for players, including human and computer
+{
+public:
+    int cards;
+    Card *head;
+    Card *tail;
+    
+    Deck(int value = 52)
+    {
+        cards = value; // Allocates memory for first card pointed to by head ptr
+        
+        head = new Card;
+        Card *point = head;
+        
+        for(int i = 1; i < cards; i++)
+        {
+          point->next = new Card;
+          point = point->next;
+        };
+        
+        /*int ctr = 0;
+        while(head)
+        {
+          ctr++;
+          head = head->next;
+        };
+        cout << ctr << "\n";
+        cout << "First Check\n";
+        
+        cout << "Check9000\n";*/
+    };
+    
+    Deck(int value, char a)
+    {
+      cards = value;
+      head = NULL;
+      tail = NULL;
+    };
+    
+    /*~Deck - Put class destructor here */
+    
+    void shuffle () // Shuffles deck of 52
+    {
+        //cout << "Check10";
+        Card *ptr = head; // ptr is equal to head ptr
+        //cout << "Yo 2!\n";
+        for(int i = 0; i < cards; i++)
+        {
+            int suit = 0, num = 0, count[4] = {0}, count2[13] = {0};
+            do {
+                suit = generateSuit(); // Randomize suit number
+                if(count[suit - 1] < 13) // If that suit count is less than 13
+                {
+                    count[suit - 1]++; // Increase the count by one
+                };
+            } while (count[suit - 1] > 13); // Do this as long as the suit count is greater than 13, 
+            //cout << "Check11";                                // until a suit number that hasn't been filled is used
+            do {
+                num = generateNum(); // Randomize card number
+                if(count2[num - 1] < 4) // If the number count is less than 4
+                {
+                    count2[num - 1]++; // Increase the count by one
+                };
+            } while (count2[num - 1] > 4); // Do this as long as the number count is greater than 4,
+            //cout << "Check12\n"; // until a number that hasn't been filled is used
+            
+            
+            if(ptr == NULL) // THIS IS THE PROBLEM
+            {
+              cout << "Error with null pointer\n";
+            };
+            
+            
+            //cout <<"Check extra\n";
+            ptr->init(suit, num); // Initialize suit and num form pointer !!!!!!!!!!!!PROGRAM BREAKS DOWN HERE!!!!!!!!!!!!!
+            //cout << "Check13\n";
+            if(checkDuplicate(head, i, num, suit) == 1) // If card is already present in the deck
+            {
+                i--; // Go again
+                count[suit - 1]--; // Redo count of suit and num
+                count2[num - 1]--;
+            } else 
+            {
+                ptr = ptr->next;
+            };
+            //cout << "Check" << i << "\n";
+        }; 
+    }  
+};
+
+Card* createDeck (Card *lolo, int current, int max)
+{
+  if(current < max)
+  {
+    lolo = new Card;
+    current++;
+    lolo->next = createDeck(lolo->next, current, max);
+    return lolo;
+  } else
+  {
+    lolo = new Card;
+    return lolo; // Eventually returns the tail card #52
+  };
+};
+
+int generateSuit() // Randomizes suit/num
 {
   return (rand() % 4) + 1;
 };
@@ -101,54 +218,29 @@ int generateNum()
   return (rand() % 13) + 1;
 };
 
-void shuffle (Card Deck[52])
+void printDeck(Deck master) // Prints full deck or person's deck - not for use in actual game
 {
-  for(int i = 0; i < 52; i++)
+  Card *ptr = master.head;
+  for(int i = 0; i < master.cards; i++)
   {
-    int suit = 0, num = 0, count[4] = {0}, count2[13] = {0};
-    do {
-      suit = generateSuit();
-      if(count[suit - 1] < 13)
-      {
-        count[suit - 1]++;
-      };
-    } while (count[suit - 1] > 13);
-    
-    do {
-      num = generateNum();
-      if(count2[num - 1] < 4)
-      {
-        count2[num - 1]++;
-      };
-    } while (count2[num - 1] > 4);
-    
-    Deck[i].init(suit, num);
-    
-    if(checkDuplicate(Deck, i, num, suit) == 1)
-    {
-      i--;
-    };
-  };
-};
-
-void printDeck(Card Deck[52])
-{
-  for(int i = 0; i < 52; i++)
-  {
-    Deck[i].readCard();
+    ptr->readCard();
     cout << "\n";
+    ptr = ptr->next;
   };
 };
 
-int checkDuplicate (Card Deck[52], int limit, int num, int suit)
+int checkDuplicate (Card *head, int limit, int num, int suit) // Checks that when making deck there is not a duplicate of randomly created card
 {
+    Card *ptr = head, *limbo;
   for (int i = 0; i < limit; i++)
   {
-    if (Deck[i].returnNum() == num && Deck[i].returnSuitnum() == suit)
+    if (head->returnNum() == num && head->returnSuitnum() == suit)
     {
       return 1;
     } else
     {
+        limbo = head->next;
+        head = limbo;
       continue;
     };
   };
@@ -156,19 +248,64 @@ int checkDuplicate (Card Deck[52], int limit, int num, int suit)
   return 0;
 };
 
+void deal(Deck *first, Deck *second, Deck master) // Deals half of shuffled deck to each player
+{
+    first->head = master.head;
+    
+    Card *iter = master.head;
+    for(int i = 0; i < 25; i++)
+    {
+      iter = iter->next;
+    };
+    
+    first->tail = iter;
+    second->head = iter->next;
+    iter->next = NULL;
+    iter = second->head;
+    for(int i = 0; i < 26; i++)
+    {
+      iter = iter->next;
+    };
+    
+    second->tail = iter;
+};
+
+void playGame(Deck *one, Deck *two)
+{
+  while(one->head && two->head)
+  {
+    cout << "You have " << one->cards << "cards\t\tPress space to draw another card\n";
+  };
+};
+
 int main ()
 {
   cout << "Let's play war! You and the computer will draw a card from your hand, and whoever's card is " <<
-      "higher wins the other's card\nIf you both draw the same card, three cards will be drawn, and whoever's third card " <<
+      "higher wins the other's card!\nIf you both draw the same card, three cards will be drawn, and whoever's third card " <<
       "is higher wins all the cards played\n\nPress enter to start";
   
-  string buff;
-  gets(buff);
+  char buff[5];
+  cin.get(buff, 1);
   
   srand(time(NULL));
-  Card Deck[52];
-  shuffle(Deck);
+  Deck master(52);
+
+  //cout << "Check9\n"; // Printed by compiler - Segmentation fault in master.shuffle()
+  master.shuffle();
+  //printDeck(master);
   
+  //cout << "\n\n";
+  
+  Deck first(26), second(26);
+  Deck *one = &first, *two = &second;
+  
+  deal(one, two, master);
+  
+  //printDeck(first);
+  //cout << "\n\n";
+  //printDeck(second);
+  
+  playGame(one, two);
   
   return 0;
 };
