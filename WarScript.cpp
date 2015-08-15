@@ -14,6 +14,8 @@ Card* createDeck (Card *lolo, int current, int max);
 void playGame(Deck *one, Deck *two);
 void deal(Deck *first, Deck *second, Deck master);
 void printDeck(Deck master);
+void takeCard(Deck *win, Deck *lose);
+Deck* tieOption(Deck *one, Deck *two, int *count1, int *count2, Card *ptr1, Card *ptr2);
 
 using namespace std;
 
@@ -37,9 +39,6 @@ public:
   {
     switch (m_num)
     {
-      case 1:
-        cout << "Ace";
-        break;
       case 2:
       case 3:
       case 4:
@@ -59,6 +58,9 @@ public:
         break;
       case 13:
         cout << "King";
+        break;
+      case 14:
+        cout << "Ace";
         break;
       default:
         cout << "Corrupted Card! RESTART";
@@ -89,7 +91,13 @@ public:
         cout << "Unknown suit value: RESTART";
         break;
     };
-    m_num = num;
+    if(num == 1)
+    {
+      m_num = 14;
+    } else
+    {
+      m_num = num;
+    };
   };
   
   int returnNum() // Accessing private variables
@@ -134,15 +142,8 @@ public:
         
         cout << "Check9000\n";*/
     };
-    
-    Deck(int value, char a)
-    {
-      cards = value;
-      head = NULL;
-      tail = NULL;
-    };
-    
     /*~Deck - Put class destructor here */
+    
     
     void shuffle () // Shuffles deck of 52
     {
@@ -170,7 +171,7 @@ public:
             //cout << "Check12\n"; // until a number that hasn't been filled is used
             
             
-            if(ptr == NULL) // THIS IS THE PROBLEM
+            if(ptr == NULL) // THIS IS THE PROBLEM -------- NOT ANYMORE
             {
               cout << "Error with null pointer\n";
             };
@@ -272,9 +273,120 @@ void deal(Deck *first, Deck *second, Deck master) // Deals half of shuffled deck
 
 void playGame(Deck *one, Deck *two)
 {
-  while(one->head && two->head)
+  while(one->cards && two->cards)
   {
-    cout << "You have " << one->cards << "cards\t\tPress space to draw another card\n";
+    cout << "You have " << one->cards << " cards\t\tPress space to draw another card\n";
+    char buff[10];
+    cin.get(buff, 1);
+    
+    cout << "\nYour card: \t\t\t";
+    one->head->readCard();
+    cout << "\nOpponent's card: \t\t";
+    two->head->readCard();
+    cout << "\n";
+    
+    if(one->head->returnNum() > two->head->returnNum())
+    {
+      takeCard(one, two);
+      cout << "You won this round\n\n";
+    } else if(one->head->returnNum() < two->head->returnNum())
+    {
+      takeCard(two, one);
+      cout << "You lost this round\n\n";
+    } else if(one->head->returnNum() == two->head->returnNum())
+    {
+      cout << "It's a tie! Each player flips a card face down and reveal the last card.\n";
+      int ctr1 = 0, ctr2 = 0;
+      
+      if(tieOption(one, two, &ctr1, &ctr2, one->head, two->head) == one)
+      {
+        cout << "And you won the lot!\n\n";
+        for(int i = 0; i < ctr2; i++)
+        {
+          takeCard(one, two);
+        };
+      } else
+      {
+        cout << "And you lost the lot!\n\n";
+        for(int i = 0; i < ctr1; i++)
+        {
+          takeCard(two, one);
+        };
+      };
+    };
+  };
+  
+  if(one->cards == 0)
+  {
+    cout << "Sorry, you lost... Womp Womp\n\n";
+  } else
+  {
+    cout << "Hooray! You won! Good job playing a game that requires no skill!\n\n";
+  };
+};
+
+void takeCard(Deck *win, Deck *lose)
+{
+  win->tail->next = lose->head;
+  win->tail = win->tail->next;
+  
+  lose->head = lose->head->next;
+  
+  win->tail->next = win->head;
+  win->head = win->head->next;
+  win->tail = win->tail->next;
+  win->tail->next = NULL;
+  
+  win->cards++;
+  lose->cards--;
+};
+
+Deck* tieOption(Deck *one, Deck *two, int *count1, int *count2, Card *ptr1, Card *ptr2)
+{
+  Card *point1 = one->head, *point2 = one->head;
+  
+  if(one->cards > *count1 + 1)
+  {
+    point1 = point1->next;
+    *count1++;
+  };
+  if(one->cards > *count1 + 1)
+  {
+    point1 = point1->next;
+    *count1++;
+  };
+  if(one->cards > *count1 + 1)
+  {
+    point1 = point1->next;
+    *count1++;
+  };
+  
+  if(two->cards > *count2 + 1)
+  {
+    point2 = point2->next;
+    *count2++;
+  };
+  if(two->cards > *count2 + 1)
+  {
+    point2 = point2->next;
+    *count2++;
+  };
+  if(two->cards > *count2 + 1)
+  {
+    point2 = point2->next;
+    *count2++;
+  };
+  
+  if(point1->returnNum() > point2->returnNum())
+  {
+    return one;
+  } else if(point1->returnNum() < point2->returnNum())
+  {
+    return two;
+  } else if(point1->returnNum() == point2->returnNum())
+  {
+    Deck *temp;
+    return tieOption(one, two, count1, count2, point1, point2);
   };
 };
 
