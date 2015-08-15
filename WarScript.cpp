@@ -16,6 +16,7 @@ void deal(Deck *first, Deck *second, Deck master);
 void printDeck(Deck master);
 void takeCard(Deck *win, Deck *lose);
 Deck* tieOption(Deck *one, Deck *two, int *count1, int *count2, Card *ptr1, Card *ptr2);
+void confirm();
 
 using namespace std;
 
@@ -263,7 +264,7 @@ void deal(Deck *first, Deck *second, Deck master) // Deals half of shuffled deck
     second->head = iter->next;
     iter->next = NULL;
     iter = second->head;
-    for(int i = 0; i < 26; i++)
+    for(int i = 0; i < 25; i++)
     {
       iter = iter->next;
     };
@@ -275,11 +276,11 @@ void playGame(Deck *one, Deck *two)
 {
   while(one->cards && two->cards)
   {
-    cout << "You have " << one->cards << " cards\t\tPress space to draw another card\n";
-    char buff[10];
-    cin.get(buff, 1);
+    cout << "You have " << one->cards << " cards\t\tPress enter to draw another card";
     
-    cout << "\nYour card: \t\t\t";
+    confirm();
+    
+    cout << "\n\nYour card: \t\t\t";
     one->head->readCard();
     cout << "\nOpponent's card: \t\t";
     two->head->readCard();
@@ -291,6 +292,7 @@ void playGame(Deck *one, Deck *two)
       cout << "You won this round\n\n";
     } else if(one->head->returnNum() < two->head->returnNum())
     {
+      cout << "Checkkkkkkkk\n\n";
       takeCard(two, one);
       cout << "You lost this round\n\n";
     } else if(one->head->returnNum() == two->head->returnNum())
@@ -349,6 +351,8 @@ Deck* tieOption(Deck *one, Deck *two, int *count1, int *count2, Card *ptr1, Card
   {
     point1 = point1->next;
     *count1++;
+    cout << "Your first hidden card:\t\t";
+    point1->readCard();
   };
   if(one->cards > *count1 + 1)
   {
@@ -390,14 +394,26 @@ Deck* tieOption(Deck *one, Deck *two, int *count1, int *count2, Card *ptr1, Card
   };
 };
 
+void confirm()
+{
+  while(1)
+  {
+    if(cin.get() == '\n')
+    {
+      return;
+    };
+  };
+};
+
 int main ()
 {
   cout << "Let's play war! You and the computer will draw a card from your hand, and whoever's card is " <<
       "higher wins the other's card!\nIf you both draw the same card, three cards will be drawn, and whoever's third card " <<
       "is higher wins all the cards played\n\nPress enter to start";
   
-  char buff[5];
-  cin.get(buff, 1);
+  confirm();
+  
+  cout << "\n\n";
   
   srand(time(NULL));
   Deck master(52);
