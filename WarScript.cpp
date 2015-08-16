@@ -15,8 +15,9 @@ void playGame(Deck *one, Deck *two);
 void deal(Deck *first, Deck *second, Deck master);
 void printDeck(Deck master);
 void takeCard(Deck *win, Deck *lose);
-Deck* tieOption(Deck *one, Deck *two, int *count1, int *count2, Card *ptr1, Card *ptr2);
+Deck* tieOption(Deck *one, Deck *two, int &count1, int &count2, Card *ptr1, Card *ptr2);
 void confirm();
+int compareCards(Card *one, Card *two);
 
 using namespace std;
 
@@ -40,6 +41,9 @@ public:
   {
     switch (m_num)
     {
+      case 1:
+        cout << "Ace";
+        break;
       case 2:
       case 3:
       case 4:
@@ -59,9 +63,6 @@ public:
         break;
       case 13:
         cout << "King";
-        break;
-      case 14:
-        cout << "Ace";
         break;
       default:
         cout << "Corrupted Card! RESTART";
@@ -92,13 +93,7 @@ public:
         cout << "Unknown suit value: RESTART";
         break;
     };
-    if(num == 1)
-    {
-      m_num = 14;
-    } else
-    {
-      m_num = num;
-    };
+    m_num = num;
   };
   
   int returnNum() // Accessing private variables
@@ -131,26 +126,12 @@ public:
           point->next = new Card;
           point = point->next;
         };
-        
-        /*int ctr = 0;
-        while(head)
-        {
-          ctr++;
-          head = head->next;
-        };
-        cout << ctr << "\n";
-        cout << "First Check\n";
-        
-        cout << "Check9000\n";*/
     };
-    /*~Deck - Put class destructor here */
-    
     
     void shuffle () // Shuffles deck of 52
     {
-        //cout << "Check10";
         Card *ptr = head; // ptr is equal to head ptr
-        //cout << "Yo 2!\n";
+        
         for(int i = 0; i < cards; i++)
         {
             int suit = 0, num = 0, count[4] = {0}, count2[13] = {0};
@@ -161,7 +142,7 @@ public:
                     count[suit - 1]++; // Increase the count by one
                 };
             } while (count[suit - 1] > 13); // Do this as long as the suit count is greater than 13, 
-            //cout << "Check11";                                // until a suit number that hasn't been filled is used
+                                           // until a suit number that hasn't been filled is used
             do {
                 num = generateNum(); // Randomize card number
                 if(count2[num - 1] < 4) // If the number count is less than 4
@@ -169,18 +150,13 @@ public:
                     count2[num - 1]++; // Increase the count by one
                 };
             } while (count2[num - 1] > 4); // Do this as long as the number count is greater than 4,
-            //cout << "Check12\n"; // until a number that hasn't been filled is used
-            
             
             if(ptr == NULL) // THIS IS THE PROBLEM -------- NOT ANYMORE
             {
               cout << "Error with null pointer\n";
             };
             
-            
-            //cout <<"Check extra\n";
-            ptr->init(suit, num); // Initialize suit and num form pointer !!!!!!!!!!!!PROGRAM BREAKS DOWN HERE!!!!!!!!!!!!!
-            //cout << "Check13\n";
+            ptr->init(suit, num); // Initialize suit and num form pointer !!!!!!!!!!!!PROGRAM BREAKS DOWN HERE!!!!!!!!!!!!!NOT ANYMORE!!!!!!!!!!!!
             if(checkDuplicate(head, i, num, suit) == 1) // If card is already present in the deck
             {
                 i--; // Go again
@@ -190,7 +166,6 @@ public:
             {
                 ptr = ptr->next;
             };
-            //cout << "Check" << i << "\n";
         }; 
     }  
 };
@@ -276,35 +251,36 @@ void playGame(Deck *one, Deck *two)
 {
   while(one->cards && two->cards)
   {
-    cout << "You have " << one->cards << " cards\t\tPress enter to draw another card";
+    cout << "-----------------------------------------------------------------------------------------------\n";
+    cout << "Cards: " << one->cards << "\t\tPress enter to draw a card";
     
     confirm();
     
-    cout << "\n\nYour card: \t\t\t";
+    cout << "\nYour card: \t\t\t";
     one->head->readCard();
     cout << "\nOpponent's card: \t\t";
     two->head->readCard();
     cout << "\n";
     
-    if(one->head->returnNum() > two->head->returnNum())
+    if(compareCards(one->head, two->head) == 1)
     {
       takeCard(one, two);
-      cout << "You won this round\n\n";
-    } else if(one->head->returnNum() < two->head->returnNum())
+      cout << "WIN\n\n";
+    } else if(compareCards(one->head, two->head) == -1)
     {
-      cout << "Checkkkkkkkk\n\n";
       takeCard(two, one);
-      cout << "You lost this round\n\n";
-    } else if(one->head->returnNum() == two->head->returnNum())
+      cout << "LOSE\n\n";
+    } else if(compareCards(one->head, two->head) == 0)
     {
       cout << "It's a tie! Each player flips a card face down and reveal the last card.\n";
-      int ctr1 = 0, ctr2 = 0;
+      int ctr1 = 1, ctr2 = 1;
       
-      if(tieOption(one, two, &ctr1, &ctr2, one->head, two->head) == one)
+      if(tieOption(one, two, ctr1, ctr2, one->head, two->head) == one)
       {
         cout << "And you won the lot!\n\n";
         for(int i = 0; i < ctr2; i++)
         {
+          cout << "You took a card\n";
           takeCard(one, two);
         };
       } else
@@ -313,6 +289,7 @@ void playGame(Deck *one, Deck *two)
         for(int i = 0; i < ctr1; i++)
         {
           takeCard(two, one);
+          cout << "They took a card\n";
         };
       };
     };
@@ -343,51 +320,67 @@ void takeCard(Deck *win, Deck *lose)
   lose->cards--;
 };
 
-Deck* tieOption(Deck *one, Deck *two, int *count1, int *count2, Card *ptr1, Card *ptr2)
+Deck* tieOption(Deck *one, Deck *two, int &count1, int &count2, Card *ptr1, Card *ptr2)
 {
-  Card *point1 = one->head, *point2 = one->head;
+  Card *point1 = ptr1, *point2 = ptr2;
   
-  if(one->cards > *count1 + 1)
+  if(one->cards > count1 + 1)
   {
     point1 = point1->next;
-    *count1++;
-    cout << "Your first hidden card:\t\t";
+    count1++;
+    cout << "\nYour first hidden card:\t\t\t";
     point1->readCard();
+    cout << "\n";
   };
-  if(one->cards > *count1 + 1)
+  if(one->cards > count1 + 1)
   {
     point1 = point1->next;
-    *count1++;
+    count1++;
+    cout << "Your second hidden card:\t\t";
+    point1->readCard();
+    cout << "\n\n";
   };
-  if(one->cards > *count1 + 1)
+  if(one->cards > count1 + 1)
   {
     point1 = point1->next;
-    *count1++;
+    count1++;
   };
   
-  if(two->cards > *count2 + 1)
+  if(two->cards > count2 + 1)
   {
     point2 = point2->next;
-    *count2++;
+    count2++;
+    cout << "Opponent's first hidden card:\t\t";
+    point2->readCard();
+    cout << "\n";
   };
-  if(two->cards > *count2 + 1)
+  if(two->cards > count2 + 1)
   {
     point2 = point2->next;
-    *count2++;
+    count2++;
+    cout << "Opponent's second hidden card:\t\t";
+    point2->readCard();
+    cout << "\n";
   };
-  if(two->cards > *count2 + 1)
+  if(two->cards > count2 + 1)
   {
     point2 = point2->next;
-    *count2++;
+    count2++;
   };
   
-  if(point1->returnNum() > point2->returnNum())
+  cout << "\n\nYour card: \t\t\t";
+  point1->readCard();
+  cout << "\nOpponent's card: \t\t";
+  point2->readCard();
+  cout << "\n";
+  
+  if(compareCards(point1, point2) == 1)
   {
     return one;
-  } else if(point1->returnNum() < point2->returnNum())
+  } else if(compareCards(point1, point2) == -1)
   {
     return two;
-  } else if(point1->returnNum() == point2->returnNum())
+  } else if(compareCards(point1, point2) == 0)
   {
     Deck *temp;
     return tieOption(one, two, count1, count2, point1, point2);
@@ -405,6 +398,48 @@ void confirm()
   };
 };
 
+int compareCards(Card *one, Card *two)
+{
+  int num1, num2;
+  if(one->returnNum() == 1)
+  {
+    num1 = 14;
+  } else
+  {
+    num1 = one->returnNum();
+  };
+  
+  if(two->returnNum() == 1)
+  {
+    num2 = 14;
+  } else
+  {
+    num2 = two->returnNum();
+  };
+  
+  if(num1 > num2)
+  {
+    return 1;
+  } else if(num2 > num1)
+  {
+    return -1;
+  } else{
+    return 0;
+  };
+};
+
+void freeDeck(Deck master)
+{
+  Card *ptr = master.head;
+  Card *temp = ptr;
+  for(int i = 0; i < 52; i++)
+  {
+    temp = ptr->next;
+    free(ptr);
+    ptr = temp;
+  };
+};
+
 int main ()
 {
   cout << "Let's play war! You and the computer will draw a card from your hand, and whoever's card is " <<
@@ -413,27 +448,23 @@ int main ()
   
   confirm();
   
-  cout << "\n\n";
+  cout << "\n";
   
   srand(time(NULL));
   Deck master(52);
-
-  //cout << "Check9\n"; // Printed by compiler - Segmentation fault in master.shuffle()
-  master.shuffle();
-  //printDeck(master);
   
-  //cout << "\n\n";
+  master.shuffle();
   
   Deck first(26), second(26);
   Deck *one = &first, *two = &second;
   
   deal(one, two, master);
   
-  //printDeck(first);
-  //cout << "\n\n";
-  //printDeck(second);
-  
   playGame(one, two);
+  freeDeck(master); //I'm pretty sure this function works, but I'm not sure - When I try to do a check, I get a segmentation fault, so I think it's good
   
   return 0;
 };
+
+// A little buggy, but the interface works! - continue on whenever you read this Blake... FINISH IT
+//UPDATE - Game looks good... Keep an eye on it when you're playing to spot any more bugs
