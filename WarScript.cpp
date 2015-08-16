@@ -324,7 +324,7 @@ Deck* tieOption(Deck *one, Deck *two, int &count1, int &count2, Card *ptr1, Card
 {
   Card *point1 = ptr1, *point2 = ptr2;
   
-  if(one->cards > count1 + 1)
+  if(one->cards >= count1 + 1)
   {
     point1 = point1->next;
     count1++;
@@ -332,7 +332,7 @@ Deck* tieOption(Deck *one, Deck *two, int &count1, int &count2, Card *ptr1, Card
     point1->readCard();
     cout << "\n";
   };
-  if(one->cards > count1 + 1)
+  if(one->cards >= count1 + 1)
   {
     point1 = point1->next;
     count1++;
@@ -340,13 +340,13 @@ Deck* tieOption(Deck *one, Deck *two, int &count1, int &count2, Card *ptr1, Card
     point1->readCard();
     cout << "\n\n";
   };
-  if(one->cards > count1 + 1)
+  if(one->cards >= count1 + 1)
   {
     point1 = point1->next;
     count1++;
   };
   
-  if(two->cards > count2 + 1)
+  if(two->cards >= count2 + 1)
   {
     point2 = point2->next;
     count2++;
@@ -354,7 +354,7 @@ Deck* tieOption(Deck *one, Deck *two, int &count1, int &count2, Card *ptr1, Card
     point2->readCard();
     cout << "\n";
   };
-  if(two->cards > count2 + 1)
+  if(two->cards >= count2 + 1)
   {
     point2 = point2->next;
     count2++;
@@ -362,7 +362,7 @@ Deck* tieOption(Deck *one, Deck *two, int &count1, int &count2, Card *ptr1, Card
     point2->readCard();
     cout << "\n";
   };
-  if(two->cards > count2 + 1)
+  if(two->cards >= count2 + 1)
   {
     point2 = point2->next;
     count2++;
