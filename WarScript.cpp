@@ -465,7 +465,7 @@ int main ()
   deal(one, two, master);
   
   playGame(one, two);
-  freeDeck(master); //I'm pretty sure this function works, but I'm not sure - When I try to do a check, I get a segmentation fault, so I think it's good
+  freeDeck(master); 
   
   return 0;
 };
