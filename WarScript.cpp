@@ -434,8 +434,12 @@ void freeDeck(Deck master)
   Card *temp = ptr;
   for(int i = 0; i < 52; i++)
   {
-    temp = ptr->next;
-    free(ptr);
+    if(ptr->next)
+    {
+      temp = ptr->next;
+    };
+    delete ptr;
+    ptr = NULL;
     ptr = temp;
   };
 };
